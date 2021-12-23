@@ -10,6 +10,13 @@ fetch ("https://api.openweathermap.org/data/2.5/weather?q=atlanta&appid=2a962a7b
 function searchbutton() {
     let city=document.getElementById("searchtext").value;
     GetWeatherdata(city);
+
+    let historybutton=document.createElement("button");
+    historybutton.addEventListener("click",() => {
+        GetWeatherdata(city);
+    })
+    historybutton.innerText=city;
+    document.getElementById("searchhistory").appendChild(historybutton);
 }
 
 function GetWeatherdata(city) {
@@ -36,15 +43,59 @@ function displayweather(data){
 }
 
 function displayuv(data){
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}}&lon=${data.coord.lon}&appid=2a962a7b9345f5d3ab23257ed8d563d6
+
+    `)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        document.getElementById("uvindex").innerText=""
+       
+    }) 
+    .catch(e => {
+        console.error(e)
+    }) 
     return "loading"
+}
+function displayoneday(daydata,Index){
+    let view=document.createElement("div")
+    view.innerHTML=`
+    <div> ${new Date(daydata.dt_txt).toDateString()}</div>
+    <div> ${displayicon(daydata)} </div>
+    <div> ${displaytemperature(kelvintofahrenheit(daydata.main.temp))}</div>
+    <div> ${daydata.wind.speed + " MPH"}</div>
+    <div> ${daydata.main.humidity + " % "}</div>
+
+    `
+    return view 
 }
 
 function display5dayforecast(data){
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${data.name}&appid=2a962a7b9345f5d3ab23257ed8d563d6
+    `)
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        document.getElementById("5dayforecast").innerText=""
+        data.list.forEach((day,Index) =>{
+            if (Index % 8 == 0 ) {
+                let view=displayoneday(day,Index/8 + 1)
+                document.getElementById("5dayforecast").appendChild(view)   
+            }
+        
+        } ) 
+    }) 
+    .catch(e => {
+        console.error(e)
+    }) 
+
+
 return "loading"
 }
 
 function displayicon (data) {
-    return "icongoeshere"
+    return `<img src="http://openweathermap.org/img/w/${data.weather[0].icon}.png">
+    `
 }
 function displayerror(){}
 function kelvintocelsius(kelvin){
@@ -66,7 +117,7 @@ function displaytemperature(temp){
 }
 function display(id,text, title) {
     let e = document.createElement("span");
-    e.innerText = text;
+    e.innerHTML = text;
 
 
     let container =document.getElementById(id);
