@@ -21,10 +21,11 @@ input {
 }
 button{
     width: 100%;
-    padding: 5px;
+    padding: 20px;
     background-color: blue;
     color: white;
     box-shadow: 1px 1px 5px black;
+    font-size: larger !important; 
 
 
 
@@ -50,4 +51,32 @@ button{
 
 #search {
     background-color: rgb(223, 213, 213);
+} 
+#fivedayforecast {
+    display: grid;
+    grid-template-columns:1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+    padding: 10px;
+
+
+}
+#fivedayforecast > div {
+background-color: rgb(9, 9, 182);
+color: white;
+padding: 10px;
+
+}
+#searchhistory {
+    grid-gap: 20px;
+    display: grid;
+    padding: 20px;
+
+
+}
+#searchhistory > button {
+background-color: grey;
+
+}
+#weather {
+    font-weight: bold;
 }

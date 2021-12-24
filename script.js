@@ -1,11 +1,20 @@
-fetch ("https://api.openweathermap.org/data/2.5/weather?q=atlanta&appid=2a962a7b9345f5d3ab23257ed8d563d6")
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-    }) 
-    .catch(e => {
-        console.error(e)
-    }) 
+if (window.localStorage.getItem("history") == null) {
+    window.localStorage.setItem("history","[]") 
+
+}
+
+{
+    let history=JSON.parse(window.localStorage.getItem("history"))
+    history.forEach(city => {
+        let historybutton=document.createElement("button");
+    historybutton.addEventListener("click",() => {
+        GetWeatherdata(city);
+    })
+    historybutton.innerText=city;
+    document.getElementById("searchhistory").appendChild(historybutton);
+
+    })
+}
 
 function searchbutton() {
     let city=document.getElementById("searchtext").value;
@@ -16,7 +25,12 @@ function searchbutton() {
         GetWeatherdata(city);
     })
     historybutton.innerText=city;
-    document.getElementById("searchhistory").appendChild(historybutton);
+    document.getElementById("searchhistory").insertBefore(historybutton, document.getElementById("searchhistory").firstChild);
+  
+    let history=JSON.parse(window.localStorage.getItem("history"))
+
+    history.unshift(city)
+    window.localStorage.setItem("history",JSON.stringify(history)) 
 }
 
 function GetWeatherdata(city) {
@@ -32,24 +46,24 @@ function GetWeatherdata(city) {
 }
 
 function displayweather(data){
-   
+    display ("cityname",data.name, "  ")
     display ("date", new Date().toDateString(), "Today Is ")
     display ("icon", displayicon(data), "")
-    display ("temperature", displaytemperature(kelvintofahrenheit(data.main.temp)), "")
+    display ("temperature", displaytemperature(kelvintofahrenheit(data.main.temp)), "Temperature ")
     display ("humidity", data.main.humidity + "%", "Humidity ")
     display ("windspeed", data.wind.speed + "MPH", "Windspeed ")
     display ("uvindex", displayuv (data), "UV Index ")
-    display ("5dayforecast", display5dayforecast (data), "5-Day Forecast ")
+    display ("fivedayforecast", display5dayforecast (data), "5-Day Forecast ")
 }
 
 function displayuv(data){
-    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}}&lon=${data.coord.lon}&appid=2a962a7b9345f5d3ab23257ed8d563d6
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=2a962a7b9345f5d3ab23257ed8d563d6
 
     `)
     .then(response => response.json())
     .then(data => {
         console.log(data)
-        document.getElementById("uvindex").innerText=""
+        document.getElementById("uvindex").innerText= "UV Index " + data.current.uvi 
        
     }) 
     .catch(e => {
@@ -76,11 +90,11 @@ function display5dayforecast(data){
     .then(response => response.json())
     .then(data => {
         console.log(data)
-        document.getElementById("5dayforecast").innerText=""
+        document.getElementById("fivedayforecast").innerText=""
         data.list.forEach((day,Index) =>{
             if (Index % 8 == 0 ) {
                 let view=displayoneday(day,Index/8 + 1)
-                document.getElementById("5dayforecast").appendChild(view)   
+                document.getElementById("fivedayforecast").appendChild(view)   
             }
         
         } ) 
